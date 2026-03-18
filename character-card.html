@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一分钟了解我家孩子</title>
+
+<style>
+
+:root{
+--theme-color:#ff6b81;
+}
+
+body{
+font-family:sans-serif;
+background:#f5f5f5;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:600px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+}
+
+.avatar {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px auto;
+}
+
+.avatar img {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.avatar-label {
+  display: block;
+  width: 160px;
+  height: 160px;
+  cursor: pointer;
+  position: relative;
+}
+
+#avatarHint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #888;
+  pointer-events: none; /* 鼠标点击穿透，让 label 接管点击 */
+  text-align: center;
+}
+
+#avatarUpload {
+  display: none; /* 保持文件选择框隐藏 */
+}
+
+
+
+.info-row{
+  display: flex;
+  justify-content: center; /* 整行居中 */
+  margin-bottom: 12px;
+  align-items: flex-start;
+  gap: 40px; /* 组合之间的间距 */
+}
+
+.info-item{
+  padding-top: 4px;
+  display: flex;
+  align-items: center; /* 标签和输入框垂直对齐 */
+  gap: 4px; /* 标签和横线之间的小间距 */
+}
+
+.label{
+  width: 50px;       /* 标签宽度固定 */
+  text-align: right;
+  font-size: 16px;
+}
+
+.info-input {
+  width: 140px;
+  height: 28px;           /* 输入框高度 */
+  line-height: 28px;      /* 文字垂直居中 */
+  padding: 6px 2px 2px 2px; /* 上6px，下2px，文字往下，横线在底部 */
+  border: none;
+  border-bottom: 1px solid #000;
+  background: transparent;
+  outline: none;
+  font-size: 18px;
+  color: var(--theme-color);
+}
+
+.author-input {
+  display: inline-block;
+  width: 140px;
+  border: none;
+  border-bottom: 1px solid #000;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+
+  height: 28px;          /* 输入框整体高度 */
+  line-height: 28px;     /* 文字垂直居中 */
+  padding: 0 4px;        /* 左右内边距即可，不要上下 padding */
+  margin: 0;             /* 取消负 margin，避免文字被压住 */
+
+  color: var(--theme-color);
+  vertical-align: middle; /* 保证与 label 或周围元素对齐 */
+}
+
+/* slider */
+
+.slider-group{
+margin:18px 0;
+}
+
+.slider-title{
+font-weight:bold;
+margin-bottom:4px;
+}
+
+.slider-label{
+display:flex;
+justify-content:space-between;
+font-size:13px;
+color:#666;
+}
+
+.slider-row{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.slider{
+flex:1;
+appearance:none;
+height:6px;
+border-radius:3px;
+background:#ddd;
+outline:none;
+}
+
+/* 滑块 */
+
+.slider::-webkit-slider-thumb{
+appearance:none;
+width:16px;
+height:16px;
+border-radius:50%;
+background:var(--theme-color);
+cursor:pointer;
+}
+
+/* 数值 */
+
+.value{
+width:35px;
+font-size:13px;
+text-align:right;
+color:#555;
+}
+
+/* 按钮 */
+
+button{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-top:20px;
+cursor:pointer;
+}
+
+/* 隐藏文件选择框 */
+#avatarUpload {
+  display: none;
+}
+
+#avatarHint {
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container" id="card">
+
+<h1>一分钟了解我家孩子</h1>
+
+<div>
+代表色：<input type="color" id="themeColor" value="#ff6b81">
+</div>
+
+<div class="avatar">
+  <label for="avatarUpload" class="avatar-label">
+    <img id="avatarPreview" src="" alt="">
+    <span id="avatarHint">点击上传头像</span>
+  </label>
+  <input type="file" id="avatarUpload" accept="image/*">
+</div>
+
+<div class="info-row">
+  <div class="info-item">
+    <span class="label">姓名：</span><input type="text" class="info-input">
+  </div>
+  <div class="info-item">
+    <span class="label">年龄：</span><input type="text" class="info-input">
+  </div>
+</div>
+
+<div class="info-row">
+  <div class="info-item">
+    <span class="label">性别：</span><input type="text" class="info-input">
+  </div>
+  <div class="info-item">
+    <span class="label">身份：</span><input type="text" class="info-input">
+  </div>
+</div>
+
+<div id="sliders"></div>
+
+<div style="text-align:right;margin-top:15px;font-size:14px;">
+  回答者：
+  <input type="text" id="author" class="author-input" placeholder="请填写cn">
+</div>
+
+
+<button id="exportBtn">导出图片</button>
+
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<script>
+
+/* 属性 */
+
+const attributes = [
+
+{title:"外貌吸引力", left:"普通", right:"精致"},
+{title:"脸型气质", left:"童颜感", right:"成熟感"},
+{title:"体型", left:"纤细", right:"丰满"},
+{title:"穿衣风格", left:"随意", right:"讲究"},
+{title:"声音", left:"低", right:"高"},
+
+{title:"坦率程度", left:"别扭", right:"坦率"},
+{title:"情绪表达", left:"面无表情", right:"情绪丰富"},
+{title:"占有欲", left:"弱", right:"强"},
+
+{title:"知识", left:"常识不足", right:"博学"},
+{title:"学习能力", left:"弱", right:"强"},
+{title:"运动能力", left:"弱", right:"强"},
+{title:"动手能力", left:"笨拙", right:"灵巧"},
+
+{title:"食量", left:"小", right:"大"},
+{title:"偏食程度", left:"不挑食", right:"严重"},
+{title:"作息", left:"夜猫子", right:"早睡"},
+{title:"起床能力", left:"困难", right:"容易"},
+
+{title:"朋友数量", left:"少", right:"多"},
+{title:"家庭关系", left:"疏远", right:"亲密"},
+{title:"恋爱经验", left:"少", right:"多"},
+{title:"人生经历", left:"平稳", right:"坎坷"}
+
+];
+
+const container = document.getElementById("sliders");
+
+/* 生成 slider */
+
+attributes.forEach(attr => {
+
+const group = document.createElement("div");
+group.className = "slider-group";
+
+group.innerHTML = `
+
+<div class="slider-title">${attr.title}</div>
+
+<div class="slider-label">
+<span>${attr.left}</span>
+<span>${attr.right}</span>
+</div>
+
+<div class="slider-row">
+<input type="range" min="0" max="100" value="50" class="slider">
+<span class="value">50</span>
+</div>
+
+`;
+
+container.appendChild(group);
+
+});
+
+/* slider 颜色 + 数值 */
+
+const sliders = document.querySelectorAll(".slider");
+const colorPicker = document.getElementById("themeColor");
+
+function updateSlider(slider){
+
+const value = slider.value;
+const color = getComputedStyle(document.documentElement)
+.getPropertyValue('--theme-color');
+
+slider.style.background =
+`linear-gradient(to right, ${color} ${value}%, #ddd ${value}%)`;
+
+const valueLabel = slider.parentElement.querySelector(".value");
+valueLabel.textContent = value;
+
+}
+
+sliders.forEach(slider => {
+
+updateSlider(slider);
+
+slider.addEventListener("input", () => {
+updateSlider(slider);
+});
+
+});
+
+/* 代表色 */
+
+colorPicker.addEventListener("input", e=>{
+
+document.documentElement.style.setProperty(
+"--theme-color",
+e.target.value
+);
+
+sliders.forEach(slider=>updateSlider(slider));
+
+});
+
+/* 头像上传 */
+
+const upload = document.getElementById("avatarUpload");
+const preview = document.getElementById("avatarPreview");
+const avatarHint = document.getElementById("avatarHint");
+
+upload.addEventListener("change", function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  avatarHint.style.display = "none";
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    preview.src = e.target.result;
+  }
+  reader.readAsDataURL(file);
+});
+
+/* 导出图片 */
+
+exportBtn.onclick = function() {
+  const card = document.getElementById("card");
+
+  // 临时隐藏导出按钮
+  exportBtn.style.display = "none";
+
+  html2canvas(card).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "角色卡.png";
+    link.href = canvas.toDataURL();
+    link.click();
+
+    // 导出完成后恢复显示
+    exportBtn.style.display = "block";
+  });
+}
+
+
+</script>
+</body>
+</html>
